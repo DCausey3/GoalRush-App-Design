@@ -1,3 +1,5 @@
-@import './fonts.css';
+/* MUST be first */
 @import './tailwind.css';
 @import './theme.css';
+
+/* everything else below */
