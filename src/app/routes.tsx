@@ -11,6 +11,7 @@ import { GoalsScreen } from "./components/GoalsScreen";
 import { ProfileScreen } from "./components/ProfileScreen";
 import { DebtScreen } from "./components/DebtScreen";
 import { IncomeScreen } from "./components/IncomeScreen";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -31,7 +32,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/app",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <HomeScreen /> },
       { path: "bills", element: <BillsScreen /> },

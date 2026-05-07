@@ -1,7 +1,19 @@
 import { motion } from "motion/react";
 import { User, Users, Bell, Lock, Moon, ChevronRight, LogOut, Settings } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
 
 export function ProfileScreen() {
+  const { user, signOut } = useAuth();
+const navigate = useNavigate();
+const fullName = user?.user_metadata?.full_name ?? "User";
+const email = user?.email ?? "";
+const initials = fullName.charAt(0).toUpperCase();
+const handleSignOut = async () => {
+  await signOut();
+  navigate("/login");
+};
+
   return (
     <div className="px-6 py-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -22,11 +34,11 @@ export function ProfileScreen() {
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-blue-400 flex items-center justify-center text-3xl font-black text-white shadow-lg">
-            A
+            {initials}
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-black text-white mb-1">Alex Johnson</h2>
-            <p className="text-indigo-100">alex.johnson@email.com</p>
+            <h2 className="text-2xl font-black text-white mb-1">{fullName}</h2>
+            <p className="text-indigo-100">{email}</p>
             <div className="mt-2 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
               <span className="text-sm text-white font-semibold">Premium Member</span>
@@ -142,13 +154,13 @@ export function ProfileScreen() {
         className="space-y-2"
       >
         <button className="w-full bg-red-500/10 backdrop-blur-sm border border-red-500/30 rounded-2xl p-4 hover:bg-red-500/20 transition-all flex items-center justify-center gap-3">
-          <LogOut className="w-5 h-5 text-red-400" />
+          <LogOut className="w-5 h-5 text-red-400" onClick={handleSignOut}/>
           <span className="text-red-400 font-semibold">Log Out</span>
         </button>
       </motion.div>
 
       <div className="text-center text-slate-500 text-sm pt-4">
-        GoalRush v1.0.0 • Made with 💙
+        GoalRush v1.0.0 • Made by CauseyInnovations
       </div>
     </div>
   );
