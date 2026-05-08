@@ -2,19 +2,22 @@ import { motion } from "motion/react";
 import { DollarSign, Plus, TrendingUp, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "../../utils/supabase";
+import { AddIncomeModal } from "./Addincomemodal";
 
 export function IncomeScreen() {
   const [income, setIncome] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchIncome() {
-      const { data, error } = await supabase.from("income").select("*").order("created_at", { ascending: false });
-      if (!error) setIncome(data ?? []);
-      setLoading(false);
-    }
-    fetchIncome();
-  }, []);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+async function fetchIncome() {
+  const { data, error } = await supabase.from("income").select("*").order("created_at", { ascending: false });
+  if (!error) setIncome(data ?? []);
+  setLoading(false);
+}
+useEffect(() => { fetchIncome(); }, []);
+
+
 
   const monthlyRecurring = income
     .filter(i => i.frequency !== "one-time")
@@ -37,7 +40,7 @@ export function IncomeScreen() {
           <h1 className="text-4xl font-black text-white">Income</h1>
           <p className="text-slate-400 mt-1">Track your earnings</p>
         </div>
-        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-500/30" onClick={() => setShowAddModal(true)}>
           <Plus className="w-6 h-6 text-white" />
         </button>
       </div>
@@ -108,6 +111,7 @@ export function IncomeScreen() {
           ))}
         </div>
       )}
+      <AddIncomeModal open={showAddModal} onClose={() => setShowAddModal(false)} onIncomeAdded={fetchIncome} />
     </div>
   );
 }

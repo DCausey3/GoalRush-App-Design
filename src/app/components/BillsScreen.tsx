@@ -3,6 +3,7 @@ import { Receipt, Calendar, CheckCircle2, AlertCircle, Plus, Zap } from "lucide-
 import { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { AddBillModal } from "./Addbillmodal";
 
 interface Bill {
   id: string;
@@ -43,7 +44,21 @@ export function BillsScreen() {
   const upcomingBills = bills.filter((b) => b.status === "unpaid");
   const paidBills = bills.filter((b) => b.status === "paid");
   const overdueBills = bills.filter((b) => b.status === "overdue");
+const [showAddModal, setShowAddModal] = useState(false);
 
+async function fetchBills() {
+  const { data, error } = await supabase.from("bills").select("*");
+  if (error) {
+    console.error("Bills error:", error);
+  } else {
+    setBills(data ?? []);
+  }
+  setLoading(false);
+}
+
+useEffect(() => {
+  fetchBills();
+}, []);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -59,7 +74,7 @@ export function BillsScreen() {
           <h1 className="text-4xl font-black text-white">Bills</h1>
           <p className="text-slate-400 mt-1">Track & manage payments</p>
         </div>
-        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30" onClick={() => setShowAddModal(true)}>
           <Plus className="w-6 h-6 text-white" />
         </button>
       </div>
@@ -216,8 +231,14 @@ export function BillsScreen() {
           )}
         </>
       )}
+      <AddBillModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onBillAdded={fetchBills}
+      />
     </div>
   );
+    
 }
 
 // Helper for "1st", "2nd", "3rd", "4th"...

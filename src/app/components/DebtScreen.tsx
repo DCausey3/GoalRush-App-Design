@@ -2,18 +2,20 @@ import { motion } from "motion/react";
 import { TrendingDown, CreditCard, Plus, Zap, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabase";
+import { AddDebtModal } from "./AddDebtModal";
 
 export function DebtScreen() {
   const [strategy, setStrategy] = useState<"snowball" | "avalanche">("snowball");
   const [debts, setDebts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchDebts() {
+  const [showAddModal, setShowAddModal] = useState(false);
+ async function fetchDebts() {
       const { data, error } = await supabase.from("debts").select("*");
       if (!error) setDebts(data ?? []);
       setLoading(false);
     }
+  useEffect(() => {
+   
     fetchDebts();
   }, []);
 
@@ -43,7 +45,8 @@ export function DebtScreen() {
           <h1 className="text-4xl font-black text-white">Debt Payoff</h1>
           <p className="text-slate-400 mt-1">Become debt-free</p>
         </div>
-        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/30">
+        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/30"
+         onClick={() => setShowAddModal(true)}>
           <Plus className="w-6 h-6 text-white" />
         </button>
       </div>
@@ -176,6 +179,13 @@ export function DebtScreen() {
           </div>
         </motion.div>
       )}
+      <AddDebtModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onDebtAdded={fetchDebts}  // re-fetches list after adding
+      />
     </div>
   );
+  
+  
 }

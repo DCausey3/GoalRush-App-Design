@@ -2,19 +2,20 @@ import { motion } from "motion/react";
 import { Target, Plus, Calendar, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "../../utils/supabase";
+import { AddGoalModal } from "./AddGoalModal";
 
 export function GoalsScreen() {
   const [goals, setGoals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchGoals() {
-      const { data, error } = await supabase.from("savings_goals").select("*").order("created_at");
-      if (!error) setGoals(data ?? []);
-      setLoading(false);
-    }
-    fetchGoals();
-  }, []);
+const [showAddModal, setShowAddModal] = useState(false);
+
+async function fetchGoals() {
+  const { data, error } = await supabase.from("savings_goals").select("*").order("created_at");
+  if (!error) setGoals(data ?? []);
+  setLoading(false);
+}
+useEffect(() => { fetchGoals(); }, []);
 
   const totalSaved = goals.reduce((sum, g) => sum + g.current_amount, 0);
   const totalTarget = goals.reduce((sum, g) => sum + g.target_amount, 0);
@@ -43,7 +44,7 @@ export function GoalsScreen() {
           <h1 className="text-4xl font-black text-white">Goals</h1>
           <p className="text-slate-400 mt-1">Reach your dreams</p>
         </div>
-        <button className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
+        <button onClick={() => setShowAddModal(true)} className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30">
           <Plus className="w-6 h-6 text-white" />
         </button>
       </div>
@@ -150,6 +151,7 @@ export function GoalsScreen() {
           })}
         </div>
       )}
+      <AddGoalModal open={showAddModal} onClose={() => setShowAddModal(false)} onGoalAdded={fetchGoals} />
     </div>
   );
 }
